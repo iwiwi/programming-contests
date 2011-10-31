@@ -2,9 +2,6 @@
 (iwi) Programming Contest Solutions
 ===================================
 
-(iwi)
------
-
 * `TopCoder <http://community.topcoder.com/tc?module=MemberProfile&cr=22689214>`_
 * `Codeforces <http://codeforces.com/profile/iwiwi>`_
 * Algorithm Library (coming soon!)
