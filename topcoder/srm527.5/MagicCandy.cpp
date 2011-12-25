@@ -32,42 +32,7 @@ struct MagicCandy {
 typedef long long ll;
 
 
-ll rec(ll n) {
-  if (n == 1) return 1;
-  ll a = (int)sqrt(n);
-  if (n == a * a) return rec(n - 1);
-
-  ll b = n - a;
-  ll c = rec(b);
-  return n - (b - c);
-}
-
-int solve2(ll n) {
-  if (n == 1) return 1;
-
-  int rad = (int)sqrt(n), pat;
-  pat = rad * rad;
-
-  if (n - pat == 0) {
-    n--;
-    rad = (int)sqrt(n);
-    pat = rad * rad;
-  }
-
-  if ((n - pat) % rad == 0) {
-    return n - rad + 1;
-  }
-  else {
-    return n - ((n - pat) % rad) + 1;
-  }
-
-  return 1;
-}
-
-
 int MagicCandy::whichOne(int n_) {
-  return solve2(n_);
-
   ll N = n_;
 
   ll x = 1;
