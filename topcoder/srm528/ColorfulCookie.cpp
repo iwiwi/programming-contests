@@ -30,40 +30,36 @@ struct ColorfulCookie {
 };
 
 
+int dp[60][2100];
 
-int N, P1, P2;
-vector<int> A;
+int ColorfulCookie::getMaximum(vector<int> A, int P1, int P2) {
+  int N = A.size();
 
+  int lb = 0, ub = 2010;
+  while (ub - lb > 1) {
+    int M = (lb + ub) / 2;
 
-map<pair<int, int>, int> mem[60];
+    dp[0][0] = 0;
+    for (int j = 1; j <= M; ++j) dp[0][j] = INT_MIN;
 
-int search(int k, int c1, int c2) {
-  if (k == N) return 0;
-  if (mem[k].count(mp(c1, c2))) return mem[k][mp(c1, c2)];
+    rep (i, N) {
+      for (int j = 0; j <= M; ++j) dp[i + 1][j] = INT_MIN;
 
-  int res = 0;
-  for (int d1 = 0; d1 * P1 <= A[k]; ++d1) {
-    int d2 = (A[k] - d1 * P1) / P2;
+      for (int j = 0; j <= M; ++j) {
+        if (dp[i][j] < 0) continue;
 
-    int t = min(c1, d1) + min(c2, d2);
-    int tc1 = (c1 - min(c1, d1)) + (d2 - min(c2, d2));
-    int tc2 = (c2 - min(c2, d2)) + (d1 - min(c1, d1));
-    res = max(res, t + search(k + 1, tc1, tc2));
+        for (int k1 = 0; k1 * P1 <= A[i] && j + k1 <= M; ++k1) {
+          int k2 = min(M - k1, (A[i] - k1 * P1) / P2);
+          dp[i + 1][j + k1] = max(dp[i + 1][j + k1], dp[i][j] + k2);
+        }
+      }
+    }
+
+    if (dp[N][M] >= M) lb = M;
+    else ub = M;
   }
 
-  // printf("%*s%d %d %d: %d\n", k, "", k, c1, c2, res);
-
-  return mem[k][mp(c1, c2)] = res;
-}
-
-int ColorfulCookie::getMaximum(vector <int> cookies, int P1_, int P2_) {
-  N = cookies.size();
-  A = cookies;
-  P1 = P1_;
-  P2 = P2_;
-
-  rep (i, N) mem[i].clear();
-  return search(0, 0, 0) * (P1 + P2);
+  return lb * (P1 + P2);
 }
 
 
