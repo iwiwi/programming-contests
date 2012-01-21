@@ -30,14 +30,13 @@ struct KingSort {
 };
 
 int parse_roman(string s) {
-  const char *TOKENS[] = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+  const string TOKENS[] = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
   const int VALUES[] = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
   int res = 0, p = 0;
   rep (i, sizeof(TOKENS) / sizeof(TOKENS[0])) {
-    const char *t = TOKENS[i];
-    int tl = strlen(t);
-    while (s.compare(p, tl, t) == 0) {
-      p += tl;
+    const string &t = TOKENS[i];
+    while (s.compare(p, t.length(), t) == 0) {
+      p += t.length();
       res += VALUES[i];
     }
   }
@@ -59,6 +58,7 @@ vector <string> KingSort::getSortedList(vector <string> kings) {
   rep (i, vs.size()) res[i] = vs[i].second;
   return res;
 }
+
 
 
 

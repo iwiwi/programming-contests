@@ -16,8 +16,8 @@
 #include <climits>
 #include <numeric>
 using namespace std;
- 
-#define all(c) (c).begin(), (c).end() 
+
+#define all(c) (c).begin(), (c).end()
 #define iter(c) __typeof((c).begin())
 #define cpresent(c, e) (find(all(c), (e)) != (c).end())
 #define rep(i, n) for (int i = 0; i < (int)(n); i++)
@@ -29,10 +29,43 @@ struct MinskyMystery {
   int computeAnswer(long long N);
 };
 
+typedef long long ll;
 
+const ll MOD = 1000000009;
+
+inline ll mult_mod(ll a, ll b, ll m) {
+  static const int BITS = sizeof(ll) * 8;
+  ll t = a, r = 0;
+  for (int i = 0; i < BITS && (b >> i) != 0; i++, t = (t + t) % m)
+    r = (r + t * ((b >> i) & 1)) % m;
+  return r;
+}
+
+ll calc(ll n, ll k) {
+  ll res = 0, m = min((ll)floor(sqrt(n)), k);
+  for (int i = 1; i <= m; ++i) res = (res + n / i) % MOD;
+  if (m == k) return res;
+  for (int i = 1; i <= n / (m + 1); ++i) res = (res + (min(n / i, k) - m)) % MOD;
+  return res;
+}
 
 int MinskyMystery::computeAnswer(long long N) {
+  if (N <= 1) return -1;
 
+  ll K = N;
+  for (ll k = 2; k * k <= N; ++k) {
+    if (N % k == 0) {
+      K = k;
+      break;
+    }
+  }
+
+  ll ans = -N;
+  ans += mult_mod(N * 4 + 2, K - 2 + 1, MOD);
+  ans += calc(N, K) - calc(N, 1);
+  ans = (ans % MOD + MOD) % MOD;
+
+  return ans;
 }
 
 
@@ -55,7 +88,7 @@ namespace moj_harness {
 			}
 			return;
 		}
-		
+
 		int correct = 0, total = 0;
 		for (int i=0;; ++i) {
 			int x = run_test_case(i);
@@ -66,7 +99,7 @@ namespace moj_harness {
 			correct += x;
 			++total;
 		}
-		
+
 		if (total == 0) {
 			cerr << "No test cases run." << endl;
 		} else if (correct < total) {
@@ -75,25 +108,25 @@ namespace moj_harness {
 			cerr << "All " << total << " tests passed!" << endl;
 		}
 	}
-	
-	int verify_case(int casenum, const int &expected, const int &received, clock_t elapsed) { 
-		cerr << "Example " << casenum << "... "; 
-		
+
+	int verify_case(int casenum, const int &expected, const int &received, clock_t elapsed) {
+		cerr << "Example " << casenum << "... ";
+
 		string verdict;
 		vector<string> info;
 		char buf[100];
-		
+
 		if (elapsed > CLOCKS_PER_SEC / 200) {
 			sprintf(buf, "time %.2fs", elapsed * (1.0/CLOCKS_PER_SEC));
 			info.push_back(buf);
 		}
-		
+
 		if (expected == received) {
 			verdict = "PASSED";
 		} else {
 			verdict = "FAILED";
 		}
-		
+
 		cerr << verdict;
 		if (!info.empty()) {
 			cerr << " (";
@@ -104,12 +137,12 @@ namespace moj_harness {
 			cerr << ")";
 		}
 		cerr << endl;
-		
+
 		if (verdict == "FAILED") {
-			cerr << "    Expected: " << expected << endl; 
-			cerr << "    Received: " << received << endl; 
+			cerr << "    Expected: " << expected << endl;
+			cerr << "    Received: " << received << endl;
 		}
-		
+
 		return verdict == "PASSED";
 	}
 
@@ -158,14 +191,14 @@ namespace moj_harness {
 
 		// custom cases
 
-/*      case 5: {
-			long long N               = ;
-			int expected__            = ;
+      case 5: {
+			long long N               = 999999974243;
+			int expected__            = 997345690;
 
 			clock_t start__           = clock();
 			int received__            = MinskyMystery().computeAnswer(N);
 			return verify_case(casenum__, expected__, received__, clock()-start__);
-		}*/
+		}
 /*      case 6: {
 			long long N               = ;
 			int expected__            = ;
@@ -187,7 +220,7 @@ namespace moj_harness {
 		}
 	}
 }
- 
+
 
 int main(int argc, char *argv[]) {
 	if (argc == 1) {
