@@ -54,6 +54,8 @@ vector<string> naive(vector<string> field) {
 
 map<pair<int, vector<string> >, ll> mem;
 
+const int L = 5;
+
 long long XorLife::countAliveCells(vector <string> field, int K) {
   if (K % 2) {
     field = naive(field);
@@ -67,7 +69,7 @@ long long XorLife::countAliveCells(vector <string> field, int K) {
     rep (y, h) rep (x, w) if (field[y][x] == 'o') ++r;
     return r;
   }
-  if (h <= 2 && w <= 2 && mem.count(mp(K, field))) return mem[mp(K, field)];
+  if (h <= L && w <= L && mem.count(mp(K, field))) return mem[mp(K, field)];
 
   int th = h / 2 + h % 2, tw = w / 2 + w % 2;
   vector<string> next[2][2];
@@ -77,7 +79,7 @@ long long XorLife::countAliveCells(vector <string> field, int K) {
   ll r = 0;
   rep (i, 2) rep (j, 2) r += countAliveCells(next[i][j], K / 2);
 
-  if (h <= 2 && w <= 2) mem[mp(K, field)] = r;
+  if (h <= L && w <= L) mem[mp(K, field)] = r;
   return r;
 }
 
@@ -204,6 +206,7 @@ namespace moj_harness {
 
 			clock_t start__           = clock();
 			long long received__      = XorLife().countAliveCells(vector <string>(field, field + (sizeof field / sizeof field[0])), K);
+
 			return verify_case(casenum__, expected__, received__, clock()-start__);
 		}
 
@@ -219,23 +222,23 @@ namespace moj_harness {
 			return verify_case(casenum__, expected__, received__, clock()-start__);
 		}
       case 5: {
-        string field[]            = {"oo"};
-			int K                     = 50;
-			long long expected__      = 0;
+        string field[]            = {"o.....o..ooo..o...o.o.......o.........oo.ooo...oo.", "oo..oo.ooo..ooo.....oo.o.....oo.oo..oooooo..o.....", "......oo.oo...o.o...oo.oo..o.oo....o.oooo..o..o...", "o.oo..ooo..o..o.oo..oo.o....ooo...o...ooo.....o.o.", "o.o.......o..ooo.o..ooooo.o.........o.ooo..o..o.o.", ".oo.......o.o.o...o...o......o....o....o.o.o.....o", "o..o.ooooo..oo...oo.o...o.ooo..o.o.o..oooo..oooo..", "o.o.oo..ooo..oo......o.o.ooo.o.ooo...o.oooo.o.....", "..o...oo.....o.o....o...o..ooo...o......o....ooo.o", ".........o.o....oo...o....oo.o....o.....o..ooooooo", ".ooooo.o..o.oo.....oo..o.oo..oooo...o.ooo...o..ooo", ".ooo..o..o...oo.....oo.o.o..oo....oo.o.ooo...oooo.", "..o.oo....ooo.oo.ooo...o.o...o...oooo.ooo.ooo...oo", "oo..o....oooo..o..o....o...o....oo.o....oo.o.oo...", "o..o...o...o.oo...o....o..o.o.o..oo.o.o.o.ooooo.o.", "oo.oo.o.....ooo.o......o..o...oo....o..o...oo.ooo.", "..oo.o.o...oo....oo.o.ooo..oo.........o..oo.oo....", "ooo..oo......oo.o.oo.oo...o....o....o...o.........", "oo...oo...oo..oo......o.o..oo.o.o..o.....ooooo....", "..ooo.....oooo....oooo...o.o...ooo.ooo.o..o.......", ".o..o..o.oo..o...o....o.o...oo......ooo.o...oo.ooo", ".o...oo...oo.o.oo.o..oo.o.oo.oo.o.o.o.o...ooo..o.o", ".o..o.o.o.o..o.o....oo..o..oooo....oo....o.oo.o.o.", "...o.........o..o........o.oooo.......o....o..o...", ".o.oo.ooo....oo....o.oo.o.o.....ooo.oo.o.ooo.....o", ".......o.......ooo...oo.o..o...o.....o...o...o...o", "oo..o.o.o..........ooo.....o...o.o...o.......o.o.o", "..o..oo.oo.....oo..o...ooo..oo..oooo.oo...oooo....", "oo..oo.o...o...oo..o...o..oo.o.....o..o.o.o.oo..o.", "o..o....ooo.o...oo.....oo..oooo...o.o....oo..o.o.o", "oo.o.ooooo....o.ooooo....o....oo..o.oo..o..oo.oo..", "...ooo.o.o..oo..oooo..o..ooo....ooo...ooo.....o.o.", ".ooo......ooooo..o..o.o..oo..o.oo..oooo.oo.o....oo", ".....o..o..ooo.....o....oo.....oooo.o.o...o.......", "ooo...ooo.o.....o.oo....o..oo...oooo....ooo..ooo..", "...oo...o....o.oo..ooo..o..ooo...o.ooo.....oo..ooo", ".ooooo.o.o..o..oo.o.o....o...oo.o...o....ooo...ooo", "o.o.ooooo..o..o........o......ooo..o..o...o.oooo..", "o...o.oo.o...o..oooooooo.o...oo.o.oo..o..o.o..o.o.", "..oooo.ooooo.o.oo...o.o..o....oo.o....o.o.o.o.oo..", "oo....o...oo..........oo.o.o....o.o..o..o..o...o..", ".o....o..o..oo..o...o..o...o.ooo.ooo....oooo....oo", "..o..o...o.oo..o.o...o.o.o.o..oooo...oo.oo.....o..", "o....o....o.o....o.o..oo.o.ooo........o..o.......o", "oo.oo..o.......o.o.o..o.o.o..ooo..o.oo..o..oooo.o.", "o.oo.o...oooo.o..oo...oo...o...o.o...oo..o..o.oooo", ".o.ooo.......o..oo.oo..oooo.ooo..oo.oo.o.ooo..oooo", "o.o.ooo....o...o......o.o....o....oo..o......o.o..", "o..oo..o...o.oo..o...o.o.....oo.....o.o......o..o.", "o....o...o..o...oo...o.o.ooo.oooo...o..o.o......o."};
+        int K                     = 989276141;
+			long long expected__      = 68743538033450;
 
 			clock_t start__           = clock();
 			long long received__      = XorLife().countAliveCells(vector <string>(field, field + (sizeof field / sizeof field[0])), K);
 			return verify_case(casenum__, expected__, received__, clock()-start__);
 		}
-/*      case 6: {
-			string field[]            = ;
-			int K                     = ;
-			long long expected__      = ;
+      case 6: {
+        string field[]            = {".", "o", ".", ".", "o", ".", "o", ".", ".", ".", ".", ".", "o", ".", ".", "o", ".", "o", ".", ".", ".", "o", ".", "o", ".", ".", "o", "o", "o", ".", "o", ".", "o", ".", ".", ".", ".", "o", ".", "o", ".", ".", ".", ".", ".", ".", "o", ".", ".", "."};
+			int K                     = 8143;
+			long long expected__      = 9114880;
 
 			clock_t start__           = clock();
 			long long received__      = XorLife().countAliveCells(vector <string>(field, field + (sizeof field / sizeof field[0])), K);
 			return verify_case(casenum__, expected__, received__, clock()-start__);
-		}*/
+		}
 		default:
 			return -1;
 		}
@@ -244,11 +247,12 @@ namespace moj_harness {
 
 
 int main(int argc, char *argv[]) {
-	if (argc == 1) {
-		moj_harness::run_test();
-	} else {
-		for (int i=1; i<argc; ++i)
-			moj_harness::run_test(atoi(argv[i]));
-	}
+  if (argc == 1) {
+    moj_harness::run_test();
+  } else {
+    for (int i=1; i<argc; ++i) {
+      moj_harness::run_test(atoi(argv[i]));
+    }
+  }
 }
 // END CUT HERE
