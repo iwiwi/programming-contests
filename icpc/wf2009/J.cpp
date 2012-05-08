@@ -1,107 +1,123 @@
-#include <cstdio>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <vector>
+#include <stack>
+#include <queue>
+#include <set>
 #include <map>
 #include <algorithm>
-#include <cmath>
-#include <string>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
-#include <iostream>
+#include <cctype>
+#include <cmath>
 #include <cassert>
+#include <climits>
 using namespace std;
-#define rep(i, n) for (int i = 0; i < (int)(n); ++i)
+
+#define all(c) (c).begin(), (c).end()
 #define iter(c) __typeof((c).begin())
+#define cpresent(c, e) (find(all(c), (e)) != (c).end())
+#define rep(i, n) for (int i = 0; i < (int)(n); i++)
 #define tr(c, i) for (iter(c) i = (c).begin(); i != (c).end(); ++i)
-#define pb push_back
-#define mp make_pair
+#define pb(e) push_back(e)
+#define mp(a, b) make_pair(a, b)
 
-typedef long long ll;
-typedef vector<int> vi;
+#define F first
+#define S second
 
-const int INF = 1LL << 29;
+int N, R;
+vector<pair<int, pair<int, int> > > fwd[50010];
+vector<pair<int, pair<int, int> > > bwd[50010];
 
-int N, E;
-vector<pair<int, int> > adj[110];
-
-void normalize(vi &a) {
-  assert((int)a.size() == E * 2 + 1);
-  int t = INF;
-  for (int ax = E; ax >= -E; --ax) {
-    t = a[E + ax] = min(a[E + ax], t);
-  }
+vector<int> ord;
+bool vis[50010];
+void toposo(int v) {
+  if (vis[v]) return;
+  vis[v] = true;
+  rep (i, fwd[v].size()) toposo(fwd[v][i].first);
+  ord.pb(v);
 }
 
-vi doit(int s, vi a) {
-  vi res(2 * E + 1, INF);
-  s %= 60;
-  for (int i = 0; i <= 1; ++i) {
-    int d = s - i * 60;
-    for (int x = -E; x <= E; ++x) {
-      int tx = x + d;
-      if (tx < -E || E < tx || a[E + x] + d > E) continue;
-      res[E + tx] = min(res[E + tx], a[E + x] + d);
-    }
-  }
-  normalize(res);
-  return res;
-}
-
-vi mergeit(vi a, vi b) {
-  vi res(2 * E + 1, INF);
-  rep (iter, 2) {
-    for (int ax = -E; ax <= E; ++ax) {
-      int bx = max(ax, -E - ax);
-      if (bx < -E || E < bx || ax + bx < -E) continue;
-          int ay = a[E + ax];
-          int by = b[E + bx];
-          if (ay + by > E) continue;
-          res[E + min(ax, bx)] = min(res[E + min(ax, bx)], max(ay, by));
-    }
-    a.swap(b);
-  }
-  normalize(res);
-  return res;
-}
-
-vi search(int v, int p) {
-  vector<int> res(2 * E + 1, INF);
-  for (int x = -E; x <= 0; ++x) res[E + x] = 0;
-
-  rep (i, adj[v].size()) if (adj[v][i].first != p) {
-    vi tmp = search(adj[v][i].first, v);
-    tmp = doit(adj[v][i].second, tmp);
-    res = mergeit(tmp, res);
-  }
-
-  return res;
-}
+pair<int, int> fdist[50010];
+pair<int, int> bdist[50010];
+bool btoll[50010];
+int ans[50010];
 
 int main() {
   for (int ca = 1; ; ++ca) {
-    scanf("%d", &N);
-    if (N == 0) return 0;
+    scanf("%d%d", &N, &R);
+    if (N == 0 || R == 0) return 0;
+    printf("Case %d: ", ca);
 
-    rep (i, N) adj[i].clear();
-    rep (i, N - 1) {
-      int a, b, s;
-      scanf("%d%d%d", &a, &b, &s);
-      --a;
-      --b;
-      adj[a].pb(mp(b, s));
-      adj[b].pb(mp(a, s));
+    rep (v, N) fwd[v].clear(), bwd[v].clear();
+    rep (i, R) {
+      int x, y, c;
+      scanf("%d%d%d", &x, &y, &c);
+      --x;
+      --y;
+      fwd[x].pb(mp(y, mp(c, i)));
+      bwd[y].pb(mp(x, mp(c, i)));
     }
 
-    // lb: impossible, ub: possible
-    int lb = -1, ub = 60 * 100 + 10;
-    while (ub - lb > 1) {
-      E = (lb + ub) / 2;
-      vector<int> res = search(0, -1);
+    ord.clear();
+    memset(vis, 0, sizeof(vis));
+    toposo(0);
+    reverse(all(ord));
 
-      if (*min_element(res.begin(), res.end()) != INF) {
-        ub = E;
-      } else {
-        lb = E;
+    rep (v, N) fdist[v] = bdist[v] = mp(INT_MAX, INT_MIN);
+    fdist[0] = bdist[N - 1] = mp(0, 0);
+    rep (k, N) {
+      int v = ord[k];
+      rep (i, fwd[v].size()) {
+        fdist[fwd[v][i].F].F = min(fdist[fwd[v][i].F].F, fdist[v].F + fwd[v][i].S.F);
+        fdist[fwd[v][i].F].S = max(fdist[fwd[v][i].F].S, fdist[v].S + fwd[v][i].S.F);
       }
     }
-    printf("Case %d: %d\n", ca, ub);
+    int L = fdist[N - 1].S;
+    // rep (v, N) printf("%d: %d %d\n", v, fdist[v].F, fdist[v].S);
+
+    memset(btoll, 0, sizeof(btoll));
+    memset(ans, -1, sizeof(ans));
+    rep (k, N) {
+      int v = ord[N - 1 - k];
+
+      bool t = false;
+      rep (i, fwd[v].size()) t |= btoll[fwd[v][i].F];
+
+      if (bdist[v].F != bdist[v].S) {
+        if (fdist[v].F != fdist[v].S) goto ng;
+        int bd = L - fdist[v].F;
+        rep (i, fwd[v].size()) {
+          int w = fwd[v][i].F;
+          if (btoll[w]) {
+            if (bdist[w].F + fwd[v][i].S.F != bd) goto ng;
+          } else {
+            if (bdist[w].F + fwd[v][i].S.F > bd) goto ng;
+            if (bdist[w].F + fwd[v][i].S.F < bd) ans[fwd[v][i].S.S] = bd - (bdist[w].F + fwd[v][i].S.F);
+          }
+        }
+        t = true;
+        bdist[v].F = bdist[v].S = bd;
+      }
+
+      rep (i, bwd[v].size()) {
+        bdist[bwd[v][i].F].F = min(bdist[bwd[v][i].F].F, bdist[v].F + bwd[v][i].S.F);
+        bdist[bwd[v][i].F].S = max(bdist[bwd[v][i].F].S, bdist[v].S + bwd[v][i].S.F);
+      }
+
+      btoll[v] = t;
+      assert(bdist[v].F == bdist[v].S);
+    }
+
+    printf("%d %d\n", R - (int)count(ans, ans + R, -1), L);
+    rep (i, R) if (ans[i] != -1) printf("%d %d\n", i + 1, ans[i]);
+    continue;
+ ng:
+    puts("No solution");
   }
+
+  return 0;
 }
+
