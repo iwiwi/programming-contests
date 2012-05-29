@@ -29,19 +29,19 @@ inline ll absll(ll x) {
   return x >= 0 ? x : -x;
 }
 
-ll div_at_most(ll a, ll b) {  // x <= a/b
+inline ll div_at_most(ll a, ll b) {  // x <= a/b
   return (a < 0) ^ (b < 0) ? -(absll(a) + absll(b) - 1) / absll(b) : absll(a) / absll(b);
 }
 
-ll div_at_least(ll a, ll b) {  // a/b <= x
+inline ll div_at_least(ll a, ll b) {  // a/b <= x
   return (a < 0) ^ (b < 0) ? -absll(a) / absll(b) : (absll(a) + absll(b) - 1) / absll(b);
 }
 
-ll div_less(ll a, ll b) {  // x < a/b
+inline ll div_less(ll a, ll b) {  // x < a/b
   return (a < 0) ^ (b < 0) ? -absll(a) / absll(b) - 1 : (absll(a) + absll(b) - 1) / absll(b) - 1;
 }
 
-ll div_more(ll a, ll b) {  // a/b < x
+inline ll div_more(ll a, ll b) {  // a/b < x
   return (a < 0) ^ (b < 0) ? -(absll(a) + absll(b) - 1) / absll(b) + 1 : absll(a) / absll(b) + 1;
 }
 
