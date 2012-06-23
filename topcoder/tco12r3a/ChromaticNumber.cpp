@@ -29,106 +29,48 @@ struct ChromaticNumber {
   int minColors(vector <string> graph);
 };
 
+typedef long long ll;
 
+int N;
+vector<string> G;
+vector<int> na[60];
 
-// adj: 隣接行列をビットマスクで
-int chromatic_number(const vector<int> &adj) {
-  int n = adj.size();
-  vector<int> dp1(1 << n), dp2(1 << n);
-  dp1[0] = dp2[0] = 1;
-  rep (i, n) rep (j, 1 << i) {
-    dp2[j | 1 << i] = -dp2[j];
-    dp1[j | 1 << i] = dp1[j] + dp1[j & ~adj[i]];
-  }
-  for (int q = 1; q < n; ++q) {
-    int r = 0;
-    rep (i, 1 << n) {
-      dp2[i] *= dp1[i];
-      r += dp2[i];
-    }
-    if (r != 0) return q;
-  }
-  return n;
-}
+ll all;
 
-namespace ZoRGaN {
-int n, maxcol;
-int w[2000], col[2000];
-vector<string> a;
+int search(int v, ll b) {
+  if (b == all) return 0;
+  if (b & (1LL << v)) return search(v + 1, b);
 
-void dfs(int u) {
-  w[u] = 1;
-  for (int i = 0, ok;; i++) {
-    ok = 1;
-    for (int j = 0; j < n && ok; j++) {
-      if (w[j] && a[u][j] == 'Y' && col[j] == i) ok = 0;
+  int tna[2], tna_n = 0;
+  rep (i, na[v].size()) if (0 == (b & (1LL << na[v][i]))) tna[tna_n++] = na[v][i];
+
+  b |= 1LL << v;
+
+  if (tna_n == 2) {
+    if (G[tna[0]][tna[1]] == 'N') {
+      return 1 + search(v + 1, b | (1LL << tna[0]) | (1LL << tna[1]));
+    } else {
+      return min(1 + search(v + 1, b | (1LL << tna[0])),
+                 1 + search(v + 1, b | (1LL << tna[1])));
     }
-    if (ok) {
-      col[u] = i;
-      maxcol = max(maxcol, i + 1);
-      break;
-    }
-  }
-  int p[n];
-  for (int i = 0; i < n; i++) p[i] = i;
-  random_shuffle(p, p + n);
-  for (int i = 0; i < n; i++) {
-    if (!w[p[i]] && a[u][p[i]] == 'Y') {
-      dfs(p[i]);
-    }
+  } else if (tna_n == 1) {
+    return 1 + search(v + 1, b | (1LL << tna[0]));
+  } else {
+    return 1 + search(v + 1, b);
   }
 }
-
-int minColors(vector<string> s) {
-  puts("It's me!!");
-
-  n = s.size();
-  a = s;
-  memset(w, 0, sizeof(w));
-  maxcol = 0;
-  for (int i = 0; i < n; i++) {
-    if (!w[i]) dfs(i);
-  }
-  return maxcol;
-}
-}
-
-
 
 int ChromaticNumber::minColors(vector <string> graph) {
-  return ZoRGaN::minColors(graph);
-
-
-  int N = graph.size();
-
-  int col[60];
-  rep (v, N) col[v] = -1;
-
-  int ans = 0;
+  N = graph.size();
+  G = graph;
   rep (v, N) {
-    if (col[v] != -1) continue;
-    col[v] = v;
-    ++ans;
-
-    vector<int> na;
-    rep (w, N) if (graph[v][w] == 'N' && col[w] == -1) na.pb(w);
-
-    if (na.size() >= 1) {
-      if (na.size() == 2) {
-        if (graph[na[0]][na[1]] == 'N') {
-          col[na[0]] = col[na[1]] = v;
-        } else {
-          col[na[0]] = v;
-        }
-      } else {
-        col[na[0]] = v;
-      }
-    }
+    na[v].clear();
+    rep (w, N) if (graph[v][w] == 'N' && v != w) na[v].pb(w);
   }
 
-  return ans;
+  all = (1LL << N) - 1;
+  return search(0, 0);
 }
-
 
 
 
@@ -267,14 +209,17 @@ namespace moj_harness {
 
 		// custom cases
 
-/*      case 5: {
-			string graph[]            = ;
-			int expected__            = ;
+      case 5: {
+			string graph[]            =
+
+                {"NYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNNYYYYYYYYYYYYYYY", "YNYYNYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY", "YYNYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYNYY", "YYYNYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYYYY", "YNYYNYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYY", "YYYYYNYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYYY", "YNYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYY", "YYYYYYYNYYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYYY", "YYYYYYYYNYYYYYYYYYYNYYYYYYYYYYNYYYYYYYYYYYYYYYYYYY", "YYYYYYYYYNNYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYYY", "YYYYYYYYYNNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYY", "YYYNYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYY", "YYYYYYYYYYYYNYYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYNYYYYY", "YYYYYNYYYYYYYNYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY", "YYYYYYYYYYYYYYNNYYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYY", "YYYYYYYYYYYYYYNNYYYYYYYYYYYNYYYYYYYYYYYYYYYYYYYYYY", "YYYYYYYNYYYYYYYYNYYYYYYYYYYYYYYNYYYYYYYYYYYYYYYYYY", "YYYYYYYYYYYYYYYYYNYYNYYYYYYYYYYYNYYYYYYYYYYYYYYYYY", "YYYYYYYYYYYYYYYYYYNYYYYYYYNYYYYYYYYYYYYYYYYYYYYYNY", "YYYYYYYYNYYYYNYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY", "YYYYYYYYYYYYYYYYYNYYNYYYYYYYYYYYYYYYYYYYNYYYYYYYYY", "YYYYYYYYYYYYNYYYYYYYYNYYYYYYYYYYYYYYNYYYYYYYYYYYYY", "YYYYYYYYYYYYYYYYYYYYYYNYYNYYYYYYYYYYYYYYNYYYYYYYYY", "YYNYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYYYYYYYYYYNYYYY", "YYYYNYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYYYYYNYYYYYYYY", "YYYYYYYYYYYYYYYYYYYYYYNYYNYYYYYYYYNYYYYYYYYYYYYYYY", "YYYYYYYYYYYYYYYYYYNYYYYYYYNYYYYYYYYYYYYYYYYYYNYYYY", "YYYYYYYYYYYYYYYNYYYYYYYYYYYNYYYYYYYNYYYYYYYYYYYYYY", "YYYYYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYYYNYYYYYY", "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYNYYYYYYYNYYYYYYYYYY", "YYYYYYYYNYYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYNYYYYYY", "YYYYYYYYYYYYYYYYNYYYYYYYYYYYYNYNYYYYYYYYYYYYYYYYYY", "YYYYYYYYYYYYYYYYYNYYYYYYYYYYYYYYNYYYYYNYYYYYYYYYYY", "NYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYNYYYYYYYYYY", "NYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYYYYNYYYYYYYYYYYYYYY", "YYYYYYYYYNYYYYYYYYYYYYYYYYYNYYYYYYYNYYYYYYYYYYYYYY", "YYYYYYYYYYYNYYYYYYYYYNYYYYYYYYYYYYYYNYYYYYYYYYYYYY", "YYYYYYNYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYY", "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYNYYYYYYYNYYY", "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYYYNYYYYYNYYYYYYYYYY", "YYYYYYYYYYYYYYYYYYYYNYNYYYYYYYYYYYYYYYYYNYYYYYYYYY", "YYYNYYYYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYYYYYNYYYYYYYY", "YYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYNYYYYY", "YYYYYYYYYYYYYYYYYYYYYYYYYYYYNYNYYYYYYYYYYYYNYYYYYY", "YYYYYYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYNYYYYY", "YYYYYYYYYYYYYYYYYYYYYYYNYYNYYYYYYYYYYYYYYYYYYNYYYY", "YYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYYYYYYYNYYY", "YYNYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNYY", "YYYYYYYYYYYYYYYYYYNYYYYYYYYYYYYYYYYYYYYYYYYYYYYYNY", "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYN"};
+
+			int expected__            = 25;
 
 			clock_t start__           = clock();
 			int received__            = ChromaticNumber().minColors(vector <string>(graph, graph + (sizeof graph / sizeof graph[0])));
 			return verify_case(casenum__, expected__, received__, clock()-start__);
-		}*/
+		}
 /*      case 6: {
 			string graph[]            = ;
 			int expected__            = ;
@@ -331,7 +276,7 @@ struct __bench__ {
 
 int main(int argc, char *argv[]) {
   const int N = 20;
-  while (true) {
+  while (false) {
     vector<string> adj(N, string(N, 'N'));
     rep (i, N) {
       while (count(all(adj[i]), 'Y') < N - 3) {
@@ -347,15 +292,6 @@ int main(int argc, char *argv[]) {
     rep (i, N) rep (j, N) bs[i] |= (adj[i][j] == 'Y') << j;
 
     int my = ChromaticNumber().minColors(adj);
-
-    int op;
-    benchmark("opponent") op = ZoRGaN::minColors(adj);
-
-    int ans = chromatic_number(bs);
-    printf("N=%d, my=%d, exact=%d\n", N, my, ans);
-    printf("N=%d, my=%d, out=%d\n", N, my, op);
-
-    assert(op <= my);
 
     // assert(out == ans);
   }
