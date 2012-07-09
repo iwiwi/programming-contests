@@ -58,63 +58,6 @@ int bipartite_matching() {
   return res;
 }
 
-
-namespace enemy {
-
-/*
-int solve(vector <int> bh, vector <int> br, vector <int> ah, vector <int> ar) {
-  int Na = ah.size();
-  int Nb = bh.size();
-  vector<pair<int, int> > A;
-  rep (i, ah.size()) A.pb(mp(ar[i], ah[i]));
-  sort(all(A));
-
-  vector<bool> FREE(Nb, true);
-  int RES = 0;
-  rep (a, Na) {
-    int best = -1;
-    rep (b, Nb)
-        if (FREE[b])
-          if (br[b] < A[a].first)
-            if (A[a].first * (long long)bh[b] > A[a].second*(long long)br[b]) {
-              if (best == -1) best = b;
-              else if (br[b] * (long long)bh[best] > bh[b] * (long long)br[best]) best = b;
-            }
-    if (best > -1) {
-      FREE[best] = false;
-      RES++;
-    }
-  }
-  return RES;
-}
-*/
-
-int cap[10000], vv[10000];
-vector<int> adj[2000];
-queue<int> fila;
-int S, T, pai[2000], apai[2000];
-bool mk[2000];
-
-class SS{
- public:
-  double x, y;
-  void pdt(int a, int b) {
-    x = double(b) / double(a);
-    y = double(b);
-  }
-};
-
-SS a[100], b[100];
-
-int fluxo() {
-  for (int i = 0; i <= T; ++i) mk[i] = false;
-  while (fila.size()) fila.pop();
-
-  mk[S] = true;
-  fila.push(S);
-}
-};
-
 typedef long long ll;
 
 int PointyWizardHats::getNumHats(vector <int> topHeight, vector <int> topRadius,
@@ -344,30 +287,7 @@ namespace moj_harness {
 	}
 }
 
-void out(vector<int> v) {
-  rep (i, v.size()) printf("%d%c", v[i], i + 1 == v.size() ? '\n' : ' ');
-}
-
 int main(int argc, char *argv[]) {
-  while (true) {
-    int L = 1 + rand() % 50;
-    int R = 1 + rand() % 50;
-
-    vector<int> TH(L), TR(L), BH(R), BR(R);
-    rep (i, L) { TH[i] = 1 + rand() % 10000; TR[i] = 1 + rand() % 10000; }
-    rep (i, R) { BH[i] = 1 + rand() % 10000; BR[i] = 1 + rand() % 10000; }
-
-    int my = PointyWizardHats().getNumHats(TH, TR, BH, BR);
-    int en = enemy::solve(TH, TR, BH, BR);
-    if (my != en) {
-      out(TH);
-      out(TR);
-      out(BH);
-      out(BR);
-      break;
-    }
-  }
-
 	if (argc == 1) {
 		moj_harness::run_test();
 	} else {
