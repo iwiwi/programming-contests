@@ -30,40 +30,6 @@ struct TheBrickTowerMediumDivOne {
 };
 
 
-vector<int> smylic(vector<int> h) {
-  int n = h.size();
-  vector<int> ans(n);
-  for (int i = 0, j = 0, k = n - 1, x = 0; i < n; ++i) {
-    int m = 0;
-    for (int t = 0; t < n; ++t) {
-      if (h[t] >= h[m])
-        m = t;
-    }
-    if (h[m] == h[x]) {
-      h[x] = -1;
-      ans[j++] = x++;
-      continue;
-    }
-    h[m] = -1;
-    ans[k--] = m;
-  }
-  return ans;
-}
-
-bool used[5555];
-int calc(vector<int> x, int left) {
-  if (!x.size()) return 0;
-  sort(all(x));
-  int ret = 0;
-  rep (i, x.size() - 1) ret += max(x[i], x[i + 1]);
-  if (left != -1) ret += max(left, x[0]);
-  return ret;
-}
-vector<int> fattypenguin(vector<int> heights) {
-  memset(used, 0, sizeof(used));
-  int ans = calc(heights, -1);
-}
-
 vector <int> TheBrickTowerMediumDivOne::find(vector <int> heights) {
 
   int N = heights.size();
