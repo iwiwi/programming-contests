@@ -269,7 +269,6 @@ polynomial<ValueType> gcd(polynomial<ValueType> a, polynomial<ValueType> b) {
 template<typename ValueType>
 polynomial<ValueType> power_mod(const polynomial<ValueType> &a, long long k,
                                 const polynomial<ValueType> &m) {
-  cout << k << " " << a.size() << " / " << m.size() << endl;
   if (k == 0) return {1};
   else if (k == 1) return a;
   else if (k % 2 == 0) return power_mod((a * a) % m, k / 2, m);
@@ -293,29 +292,16 @@ int main() {
     vector<mint> A(N + 1);
     rep (i, N + 1) cin >> A[i];
     mpoly f(A);
-    cout << f << endl;
 
     if (f.size() == 0) {
       cout << P << endl;
-      continue;
     }
-
-    // x*(x-1)*(x-2)*...*(x-P) = x^P - x
-    if (false) {
-      vector<mint> ga(P + 1);
-      ga.back() = 1;
-      mpoly g = mpoly(ga) - mpoly({0, 1});
-      cout << g << endl;
-      cout << g % f << endl;
+    else {
+      // x*(x-1)*(x-2)*...*(x-P) = x^P - x
+      // g = (x^P mod F) - x
+      mpoly g = power_mod(mpoly({0, 1}), P, f) - mpoly({0, 1});
+      mpoly h = gcd(g, f);
+      cout << (int)h.size() - 1 << endl;
     }
-
-    // (x^P mod F) - x
-    mpoly g = power_mod(mpoly({0, 1}), P, f) - mpoly({0, 1});
-    // cout << g << endl;
-
-    mpoly h = gcd(g, f);
-    // cout << h << endl;
-
-    cout << (int)h.size() - 1 << endl;
   }
 }
