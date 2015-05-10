@@ -1,6 +1,5 @@
 typedef long long ll;
 
-// http://math314.hateblo.jp/entry/2015/05/07/014908
 inline ll mod_pow(ll a, ll k, ll m) {
   ll r = 1;
   for (; k > 0; k >>= 1) {
